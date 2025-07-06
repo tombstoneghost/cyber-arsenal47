@@ -1,4 +1,4 @@
-# Automated Network Assessment Toolkit
+# Cyber-Arsenal47: An Automated Network Assessment Toolkit
 
 > 🔒 A hybrid CLI-based toolkit for automating network reconnaissance, service enumeration, and vulnerability assessment—developed using **Python** and **GoLang**.
 
@@ -6,7 +6,7 @@
 
 ## ✨ About the Project
 
-**Automated Network Assessment Toolkit** is a powerful, modular, and semi-automated penetration testing framework designed to streamline the process of identifying, scanning, and analyzing various network services.
+**Cyber-Arsenal47** is a powerful, modular, and semi-automated penetration testing framework designed to streamline the process of identifying, scanning, and analyzing various network services.
 
 The tool uses Python for the core CLI logic and orchestration, while service-specific modules are written in GoLang for speed and reliability. This CLI-based tool helps simplify routine pentesting tasks and has been presented at **SecTor Arsenal 2024** held at the **Metro Toronto Convention Centre**.
 
