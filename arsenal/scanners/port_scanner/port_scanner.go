@@ -126,39 +126,38 @@ func Scanner_init(target []string, port_start int, port_end int, nmap bool, host
 
 	scan_results := make(map[string][]int)
 
-	result_channel := make(chan int)
-
-	var wg sync.WaitGroup
-
 	for _, ip := range target {
 		open_ports := []int{}
-
 		fmt.Println("[!] Scanning target: " + ip)
 
+		result_channel := make(chan int)
+		var wg sync.WaitGroup
+
+		// Launch goroutines for common ports
 		for _, port := range common_ports {
 			wg.Add(1)
-
 			go scanner(ip, port, protocol, result_channel, &wg)
 		}
 
+		// Launch goroutines for the rest of the range
 		ports := makeRange(port_start, port_end)
-
 		for _, port := range ports {
 			wg.Add(1)
 			go scanner(ip, port, protocol, result_channel, &wg)
 		}
 
+		// Close the channel after all goroutines are done
 		go func() {
 			wg.Wait()
 			close(result_channel)
 		}()
 
+		// Collect results
 		for result := range result_channel {
 			open_ports = append(open_ports, result)
 		}
 
 		sort.Ints(open_ports)
-
 		scan_results[ip] = open_ports
 	}
 
@@ -167,16 +166,11 @@ func Scanner_init(target []string, port_start int, port_end int, nmap bool, host
 	}
 
 	nmap_results := make(map[int]string)
-
 	if nmap {
 		fmt.Println("[!] Initializing Nmap Scanner")
 		time.Sleep(5 * time.Second)
-
 		nmap_results = run_nmap(scan_results, host_discovery)
 	}
 
-	wg.Wait()
-
 	return scan_results, nmap_results
-
 }

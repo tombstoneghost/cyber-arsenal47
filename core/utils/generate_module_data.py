@@ -1,5 +1,5 @@
-from utils import get_modules, get_function_defination
-from app import funcs
+from core.utils import get_modules, get_function_defination
+from core import funcs
 
 def generate_module_data():
     module_data = {}

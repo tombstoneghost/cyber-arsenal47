@@ -1,10 +1,14 @@
 # Imports
 import ctypes
+from core.utils.get_modules import get_modules
+from core.config import Config
 
-from utils.get_modules import get_modules
+# Load configuration
+config = Config()
+arsenal_so_file = config.get('arsenal_so_file')
 
 # Ctypes Libary Configuration
-arsenal = ctypes.cdll.LoadLibrary('./arsenal/arsenal.so')
+arsenal = ctypes.cdll.LoadLibrary(arsenal_so_file)
 
 
 # List all available domains

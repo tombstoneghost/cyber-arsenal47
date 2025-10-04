@@ -1,0 +1,9 @@
+services:
+  - service: web
+    ports: [80, 443, 8000, 8080]
+  - service: ftp
+    ports: [21]
+  - service: smb
+    ports: [445]
+  - service: ssh
+    ports: [22]
