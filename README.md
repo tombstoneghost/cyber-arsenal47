@@ -1,49 +1,40 @@
-# Cyber-Arsenal47: An Automated Network Assessment Toolkit
+# Cyber-Arsenal47: Modular Automated Penetration Testing Toolkit
 
-> 🔒 A hybrid CLI-based toolkit for automating network reconnaissance, service enumeration, and vulnerability assessment—developed using **Python** and **GoLang**.
+> **Cyber-Arsenal47** is a modular, automation-focused penetration testing toolkit built with Go and Python. It leverages high-performance Go modules compiled into a shared library (`arsenal.so`), which are dynamically loaded and orchestrated by a Python CLI driver.
 
----
 
-## ✨ About the Project
+## 🚩 Project Overview
 
-**Cyber-Arsenal47** is a powerful, modular, and semi-automated penetration testing framework designed to streamline the process of identifying, scanning, and analyzing various network services.
+Cyber-Arsenal47 streamlines network reconnaissance, enumeration, and exploitation by combining the speed of Go with the flexibility of Python. The toolkit is designed for extensibility, automation, and ease of use, making it suitable for both red and blue teams.
 
-The tool uses Python for the core CLI logic and orchestration, while service-specific modules are written in GoLang for speed and reliability. This CLI-based tool helps simplify routine pentesting tasks and has been presented at **SecTor Arsenal 2024** held at the **Metro Toronto Convention Centre**.
+## ✨ Core Features
 
----
+- **Modular Design:** Plug-and-play Go modules for scanners, miners, exploits, and automation tasks.
+- **Python CLI Interface:** Interactive command-line interface with dynamic module discovery and autocompletion.
+- **AutoPentest Module:** Orchestrates multi-stage scanning and exploitation workflows with a single command.
+- **Logging & Results:** Each run generates detailed logs and summary files in the `log/` directory.
+- **Automatic Go Module Building:** Build all Go modules into `arsenal.so` using `scripts/build_modules.sh`.
+- **Configurable Modules:** YAML files in `configs/` allow easy customization of service mappings and module options.
 
-## 🧠 Features
+## 🏗 Architecture Overview
 
-- Modular architecture with plug-and-play domain-specific scanners
-- CLI interface for loading, configuring, and running modules
-- Auto-pentest module for streamlined assessments
-- Exploit-DB integration to identify known exploits
-- Built-in modules for FTP, SMB, DNS, and more
-- Easy to extend and maintain
+- **Go Modules:** Each scanner, miner, or exploit is implemented as a Go module.
+- **Shared Library (`arsenal.so`):** All Go modules are compiled into a single shared object using cgo.
+- **Python Driver:** The CLI (in Python) loads `arsenal.so` via `ctypes`, exposing all modules as callable functions.
+- **Workflow:**  
+  `Python CLI` → `arsenal.so` (Go modules) → Results/logs
 
----
 
-## 🗂️ Directory Structure
+## ⚙️ Setup & Usage
 
-```
-├── arsenal/               # GoLang modules compiled to .so files
-├── app/                   # Python orchestrator logic
-├── files/                 # Exploit DB CSV files
-├── utils/                 # Helper functions
-├── cyber-arsenal.sh       # Main launcher
-└── README.md              # Documentation
-```
+### Prerequisites
 
----
+- **Go** (>= 1.18)
+- **Python 3** (>= 3.8)
+- **gcc** (for cgo compilation)
+- **Linux** (tested on Kali 2024.1)
 
-## ⚙️ Installation
-
-### Prerequisites:
-- Python 3.8+
-- Go 1.18+
-- Linux (tested on Kali 2024.1)
-
-### Steps:
+### Installation & Build
 
 ```bash
 git clone https://github.com/tombstoneghost/cyber-arsenal47.git
@@ -52,12 +43,27 @@ cd cyber-arsenal47
 # Install Python dependencies
 pip install -r requirements.txt
 
-# Launch the CLI
-chmod +x cyber-arsenal.sh
-./cyber-arsenal.sh
+# Build Go modules as a shared library
+chmod +x build_modules.sh
+./build_modules.sh
+
+# Run the CLI
+./cyber-arsenal47.sh
 ```
 
----
+
+## 🖥️ Example CLI Commands
+
+```
+# Use a scanner module
+use scanners/port_scanner
+run
+
+# Use the automated pentest module
+use automate/auto_pentest
+set target <IP>
+run
+```
 
 ## 🖥 Sample CLI Output
 
@@ -76,7 +82,19 @@ $ ./cyber-arsenal.sh
           <- Welcome to Cyber-Arsenal47, The Ultimate Penetration Testing Toolkit ->
 ```
 
----
+## 📁 Folder Structure
+```
+cyber-arsenal47/
+├── arsenal/      # Go modules (scanners, miners, exploits, automation)
+│   └── arsenal.go
+├── core/         # Python CLI logic and utilities
+├── cmd/          # CLI entry point (cli.py)
+├── configs/      # YAML configuration files
+├── log/          # Output logs and summary files
+├── scripts/      # Build scripts (build_modules.sh)
+├── [requirements.txt](http://_vscodecontentref_/4)
+└── [README.md](http://_vscodecontentref_/5)
+```
 
 ## 🚀 Modules Overview
 
@@ -99,73 +117,52 @@ $ ./cyber-arsenal.sh
 - `exploit/nfs_enum`
 - `auxiliary/smtp_miner`
 
----
 
-## 📦 Sample Outputs
+## 📦 Logging & Results
 
-- **Port Scanner Output:**
-  ```
-  [+] Found open ports: 21 (FTP), 80 (HTTP), 445 (SMB)
-  ```
-
-- **SMB Miner:**
-  ```
-  [+] Guest access enabled
-  [+] Shares enumerated: Public, ADMIN$, C$
-  ```
-
-- **Exploit_DB Match:**
-  ```
-  [+] Apache 2.4.29 - Remote Code Execution
-  CVE-2017-5638 matched from Exploit-DB
-  ```
-
-- **Auto-Pentest:**
-  ```
-  [*] Initiating automated scan
-  [*] Detected: FTP, SMB
-  [*] Running respective modules...
-  ```
-
----
-
-## 🏗 Architecture Overview
-
-The tool follows a CLI → Python Core → Go Module pipeline. Python handles the interface and logic, while the compiled GoLang `.so` modules perform the heavy lifting like enumeration and brute-force attempts.
-
----
-
-## 🛠 Development Status
-
-The tool is under **active development**. While core modules are stable, some auxiliary and exploit modules are still being refined.  
-Bug fixes and optimizations are planned in the upcoming weeks.
-
----
+- **Log Files**: Each module and AutoPentest run generates a timestamped log in `log/` (e.g., log/`auto_pentest_target_YYYYMMDD_HHMMSS.log`).
+- **Summary Files**: Human-readable summaries are saved alongside logs (e.g., `log/auto_pentest_target_YYYYMMDD_HHMMSS.txt`).
+- **Configurable Output**: Log and summary file locations are managed automatically per run.
 
 ## 🤝 Contributing
 
-We are open for collaboration!  
-If you'd like to contribute:
+**We welcome contributions!**
+To add a new module or feature:
 
-1. Fork this repo
-2. Create your branch: `git checkout -b feature/new-module`
-3. Commit and push changes
-4. Open a pull request
+- **Go Modules**:
+  - Add your scanner/miner/exploit in arsenal/.
+  - Register it in arsenal.go for export.
+  - Follow the existing module structure and documentation.
 
----
+- **Python CLI**:
+  - Integrate new modules in core/ and update cmd/cli.py as needed.
+  - Ensure new commands and options are documented.
+
+- **Configs**:
+  - Add or update YAML files in configs/ for service-port mappings or module options.
+
+**Contribution Steps:**
+
+1. Fork the repo and create a feature branch.
+2. Add or update modules/configs.
+3. Test your changes.
+4. Open a pull request with a clear description.
+
+## 🛣️ Roadmap
+- New modules: RDP miner, LDAP login, MSSQL login, SNMP miner, WebSocket scanner, NFS enum, SMTP miner.
+- Continuous Integration (CI) for automated testing and builds.
+- Enhanced reporting and sample output files.
+- Improved CLI UX and error handling.
+
 
 ## 📚 License
 
 This project is licensed under the GNU General Public License (GPL).
 
----
-
 ## 🙌 Acknowledgements
 
-- Developed by Simardeep Singh (@tombstoneghost)
+- Developed by **Simardeep Singh* (@tombstoneghost)
 - Presented at SecTor Arsenal 2024, Toronto
-
----
 
 ## 💬 Contact
 
