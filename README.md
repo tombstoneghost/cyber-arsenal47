@@ -51,20 +51,6 @@ chmod +x build_modules.sh
 ./cyber-arsenal47.sh
 ```
 
-
-## 🖥️ Example CLI Commands
-
-```
-# Use a scanner module
-use scanners/port_scanner
-run
-
-# Use the automated pentest module
-use automate/auto_pentest
-set target <IP>
-run
-```
-
 ## 🖥 Sample CLI Output
 
 ```
@@ -80,6 +66,16 @@ $ ./cyber-arsenal.sh
      /____/                                                                         
 
           <- Welcome to Cyber-Arsenal47, The Ultimate Penetration Testing Toolkit ->
+```
+```
+# Use a scanner module
+use scanners/port_scanner
+run
+
+# Use the automated pentest module
+use automate/auto_pentest
+set target <IP>
+run
 ```
 
 ## 📁 Folder Structure
