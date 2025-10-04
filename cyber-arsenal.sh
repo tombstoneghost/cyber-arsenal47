@@ -1,5 +1,5 @@
 #!/bin/bash
 
-./build_modules.sh
+./scripts/build_modules.sh
 
-sudo python3 run.py
+sudo python3 cmd/cli.py

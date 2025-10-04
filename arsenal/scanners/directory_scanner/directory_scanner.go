@@ -32,9 +32,7 @@ var (
 
 func scanner(url string, errorCodes []int, client *http.Client) {
 	resp, err := client.Get(url)
-	if err != nil {
-		printResult(fmt.Sprintf("[-] Error scanning %s: %v", url, err))
-	} else {
+	if err == nil {
 		defer resp.Body.Close()
 		statusCode := resp.StatusCode
 		if statusCode == 200 {
@@ -76,6 +74,14 @@ func worker(jobs <-chan string, errorCodes []int, wg *sync.WaitGroup, client *ht
 }
 
 func Scanner_init(target string, wordlist string, error_codes []int, extensions []string, file_only bool, workerCount int) {
+	if !strings.HasPrefix(target, "http://") && !strings.HasPrefix(target, "https://") {
+		target = "http://" + target + "/"
+	} else {
+		if !strings.HasSuffix(target, "/") {
+			target = target + "/"
+		}
+	}
+
 	fmt.Println("[!] Scanning target: " + target)
 	fmt.Println("[!] Wordlist: " + wordlist)
 	fmt.Printf("[!] Error Codes: %v\n", error_codes)
@@ -104,16 +110,34 @@ func Scanner_init(target string, wordlist string, error_codes []int, extensions 
 
 	defer file.Close()
 
-	// Count total lines in the wordlist
-	file_read := bufio.NewScanner(file)
-	for file_read.Scan() {
-		line := strings.TrimSpace(file_read.Text())
-		if line != "" && !strings.HasPrefix(line, "#") {
-			total++
+	var file_read *bufio.Scanner
+
+	// Count total jobs (lines + extensions)
+	total = 0
+	file.Seek(0, 0)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		word := strings.TrimSpace(scanner.Text())
+		if word == "" || strings.HasPrefix(word, "#") {
+			continue
+		}
+		if !file_only && len(extensions) > 0 {
+			// 1 for directory + N for each extension
+			total += 1 + len(extensions)
+		} else if file_only && len(extensions) > 0 {
+			// Only files with extensions
+			total += len(extensions)
+		} else {
+			// Only directory
+			total += 1
 		}
 	}
+	if err := scanner.Err(); err != nil {
+		fmt.Printf("Error reading wordlist file: %v\n", err)
+		return
+	}
 
-	// Reset file reader to the beginning
+	// Reset file reader to the beginning for actual scan
 	if _, err := file.Seek(0, 0); err != nil {
 		fmt.Printf("Error resetting file reader: %v\n", err)
 		return
